@@ -1,0 +1,38 @@
+// Template: Gradle build.gradle with OpenRewrite plugin configured
+// Use this as reference when adding OpenRewrite to your project
+// Add this to your build.gradle file
+
+plugins {
+    // ... other plugins ...
+    id("org.openrewrite.rewrite") version "latest.release"
+    // Or pin version: version "6.7.0"
+}
+
+rewrite {
+    // IMPORTANT: Order matters - Java first, then Spring Boot
+    // Use activeRecipe() not activeRecipes()
+    activeRecipe("org.openrewrite.java.migrate.UpgradeToJava21")
+    activeRecipe("org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0")
+    
+    // Generate detailed reports in rewrite-datatables/
+    setExportDatatables(true)
+    
+    // Optional: Enable debug logging
+    // setLogLevel("DEBUG")
+}
+
+repositories {
+    mavenCentral()
+    // Add other repos if needed
+}
+
+// Define rewrite dependencies
+dependencies {
+    // ... your project dependencies ...
+    
+    // Java migration recipes
+    rewrite("org.openrewrite.recipe:rewrite-migrate-java:latest.release")
+    
+    // Spring Boot 4.0 migration recipes
+    rewrite("org.openrewrite.recipe:rewrite-spring:latest.release")
+}

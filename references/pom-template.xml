@@ -1,0 +1,43 @@
+<!-- 
+  Template: Maven pom.xml with OpenRewrite plugin configured
+  Use this as reference when adding OpenRewrite to your project
+  Copy the <plugin> block into your <build><plugins> section
+-->
+<plugin>
+    <groupId>org.openrewrite.maven</groupId>
+    <artifactId>rewrite-maven-plugin</artifactId>
+    <version>latest.release</version>
+    <!-- Optional: pin specific version instead of latest.release
+         Example: <version>6.7.0</version>
+    -->
+    <configuration>
+        <!-- IMPORTANT: Order matters - Java first, then Spring Boot -->
+        <activeRecipes>
+            <recipe>org.openrewrite.java.migrate.UpgradeToJava21</recipe>
+            <recipe>org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0</recipe>
+        </activeRecipes>
+        
+        <!-- Generate detailed reports in rewrite-datatables/ -->
+        <exportDatatables>true</exportDatatables>
+        
+        <!-- Optional: Set logging level for debugging
+        <logLevel>DEBUG</logLevel>
+        -->
+    </configuration>
+    
+    <dependencies>
+        <!-- Java migration recipes -->
+        <dependency>
+            <groupId>org.openrewrite.recipe</groupId>
+            <artifactId>rewrite-migrate-java</artifactId>
+            <version>latest.release</version>
+        </dependency>
+        
+        <!-- Spring Boot 4.0 migration recipes -->
+        <dependency>
+            <groupId>org.openrewrite.recipe</groupId>
+            <artifactId>rewrite-spring</artifactId>
+            <version>latest.release</version>
+        </dependency>
+    </dependencies>
+</plugin>
