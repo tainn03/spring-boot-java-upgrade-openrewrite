@@ -1,5 +1,3 @@
-# AI Coding Agent Guidelines
-
 ## Project Overview
 
 **spring-boot-java-upgrade-openrewrite** is a skill for safely automating Spring Boot and Java version upgrades using OpenRewrite recipes.
