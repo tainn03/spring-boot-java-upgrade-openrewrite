@@ -10,6 +10,16 @@
 - Supports both Maven and Gradle projects
 - Handles single-module and multi-module projects
 
+## Installation
+
+Install this skill into your AI coding agent environment using:
+
+```bash
+npx skills add tainn03/spring-boot-java-upgrade-openrewrite
+```
+
+After installation, the skill will be available to your agent for automating Spring Boot and Java version upgrades.
+
 ## Key Conventions
 
 ### Build Tool Detection
