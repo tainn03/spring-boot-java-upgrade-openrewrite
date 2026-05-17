@@ -1,4 +1,4 @@
-# Spring Boot 4.0 & Java 21 Breaking Changes Reference
+# Spring Boot 4.0 & Java 25 Breaking Changes Reference
 
 ## Key Breaking Changes to Watch For
 
@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.persistence.Entity;
 import javax.validation.Valid;
 
-// AFTER (Java 21, Spring Boot 4.0+)
+// AFTER (Java 25, Spring Boot 4.0+)
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.persistence.Entity;
 import jakarta.validation.Valid;
@@ -83,7 +83,99 @@ Spring Boot 4.0 removed some combined starters:
 
 ---
 
-### 7. Configuration Processor Changes
+### 7. Jackson 3 Migration (Major Breaking Change)
+
+Jackson 3 is a **major rewrite** that removes many legacy APIs and changes defaults.
+
+**What breaks**:
+- `ObjectMapper` configuration API changed (fluent-style replacement)
+- `SerializationFeature` / `DeserializationFeature` enum values renamed or removed
+- `JsonParser.Feature` / `JsonGenerator.Feature` restructured
+- `@JsonIgnore`, `@JsonProperty` semantics may differ
+- Custom `JsonSerializer`/`JsonDeserializer` base classes changed
+- Module registration API changed
+- Mix-in annotations behavior may differ
+
+**Example transformation**:
+```java
+// BEFORE (Jackson 2.x)
+ObjectMapper mapper = new ObjectMapper();
+mapper.enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+// AFTER (Jackson 3.x)
+ObjectMapper mapper = new ObjectMapper();
+mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+```
+
+**Status:** ✅ OpenRewrite handles this automatically
+
+**Post-migration manual checks**:
+- Review any custom `ObjectMapper` configuration in your codebase
+- Check custom serializers/deserializers for API compatibility
+- Verify JSON serialization in integration tests (edge cases)
+- Test backward compatibility with stored serialized data
+- Update any Jackson-dependent libraries (Feign, RestTemplate, etc.)
+
+---
+
+### 8. JUnit 4/5 → 6 Migration
+
+JUnit 6 is the successor of JUnit 5, removing legacy JUnit 4 dependencies and updating test framework APIs.
+
+**What breaks**:
+- JUnit 4 vintage engine is removed (any remaining JUnit 4 tests will fail)
+- `Assertions` and related classes may have updated method signatures
+- Conditional test execution (`@EnabledIf`, `@DisabledIf`) APIs refined
+- Test extensions from JUnit 5 may need updates
+
+**Status:** ✅ OpenRewrite handles this automatically
+
+**Migration notes**:
+- Most `@Test` annotations remain unchanged
+- The migration primarily cleans up transitive dependencies
+- If you have custom JUnit 5 extensions, check compatibility
+
+---
+
+### 9. Dependency Version Conflicts (Post-Migration)
+
+After major migration, you may encounter version conflicts.
+
+**Jackson 2.x vs 3.x conflict**:
+```xml
+<!-- If a library pulls in Jackson 2.x, exclude it: -->
+<dependency>
+    <groupId>some.library</groupId>
+    <artifactId>some-artifact</artifactId>
+    <exclusions>
+        <exclusion>
+            <groupId>com.fasterxml.jackson</groupId>
+            <artifactId>*</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+```
+
+**Jakarta EE conflict (javax.* vs jakarta.*)**:
+```xml
+<!-- Old libraries depending on javax.* may cause NoClassDefFoundError -->
+<!-- Solution: upgrade the library or exclude the javax transitive dependency -->
+```
+
+**Spring Cloud BOM version mismatch**:
+```xml
+<!-- WRONG: Spring Cloud 2025.0 is NOT compatible with Boot 4.0 -->
+<spring-cloud.version>2025.0.1</spring-cloud.version>
+
+<!-- CORRECT: Spring Cloud 2025.1+ is required -->
+<spring-cloud.version>2025.1.0</spring-cloud.version>
+```
+
+---
+
+### 10. Configuration Processor Changes
 The annotation processor may have breaking changes:
 
 ```xml
@@ -145,4 +237,4 @@ curl http://localhost:8080/health
 - **Official Migration Guide:** https://spring.io/projects/spring-boot
 - **OpenRewrite Spring Recipes:** https://docs.openrewrite.org/recipes/java/spring
 - **Jakarta EE Guide:** https://jakarta.ee/
-- **Java 21 Features:** https://openjdk.java.net/
+- **Java 25 Features:** https://openjdk.java.net/

@@ -1,19 +1,40 @@
-// Template: Gradle build.gradle with OpenRewrite plugin configured
-// Use this as reference when adding OpenRewrite to your project
-// Add this to your build.gradle file
+// Template: Gradle with OpenRewrite plugin configured
+// 
+// Pick the DSL matching your project:
+//   - Groovy DSL  → build.gradle  (first block)
+//   - Kotlin DSL  → build.gradle.kts (second block)
+//
+// For multi-module projects: add to root build file only.
+// The plugin processes all subprojects automatically.
+//
+// WARNING: Gradle plugin uses `activeRecipe()` (singular), NOT `activeRecipes()`.
+// Calling `activeRecipes()` will fail with "Unknown property" error.
 
+// ============================================================
+// OPTION A: Groovy DSL — build.gradle
+// ============================================================
+/*
 plugins {
-    // ... other plugins ...
     id("org.openrewrite.rewrite") version "latest.release"
-    // Or pin version: version "6.7.0"
+    // Or pin specific version: id("org.openrewrite.rewrite") version "6.10.0"
 }
 
 rewrite {
-    // IMPORTANT: Order matters - Java first, then Spring Boot
-    // Use activeRecipe() not activeRecipes()
-    activeRecipe("org.openrewrite.java.migrate.UpgradeToJava21")
-    activeRecipe("org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0")
+    // Order matters: Java first, then framework recipes
     
+    // ---- Option A1: Inline recipes (simple) ----
+    activeRecipe("org.openrewrite.java.migrate.UpgradeToJava25")
+    activeRecipe("org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0")
+    activeRecipe("org.openrewrite.java.spring.cloud2025.UpgradeSpringCloud_2025_1")
+    activeRecipe("org.openrewrite.java.jackson.UpgradeJackson_3")
+    activeRecipe("org.openrewrite.java.testing.junit5.JUnit4to5Migration")
+    activeRecipe("org.openrewrite.java.testing.junit6.UpgradeToJUnit6")
+    activeRecipe("org.openrewrite.maven.UpgradePlugins")
+    activeRecipe("org.openrewrite.gradle.UpgradePlugins")
+    
+    // ---- Option A2: Umbrella recipe via rewrite.yml ----
+    // activeRecipe("com.company.FullModernization")
+
     // Generate detailed reports in rewrite-datatables/
     setExportDatatables(true)
     
@@ -23,16 +44,56 @@ rewrite {
 
 repositories {
     mavenCentral()
-    // Add other repos if needed
 }
 
-// Define rewrite dependencies
 dependencies {
-    // ... your project dependencies ...
-    
     // Java migration recipes
     rewrite("org.openrewrite.recipe:rewrite-migrate-java:latest.release")
     
     // Spring Boot 4.0 migration recipes
     rewrite("org.openrewrite.recipe:rewrite-spring:latest.release")
+    
+    // Jackson 3 migration recipes
+    rewrite("org.openrewrite.recipe:rewrite-jackson:latest.release")
+    
+    // JUnit 6 / testing migration recipes
+    rewrite("org.openrewrite.recipe:rewrite-testing-frameworks:latest.release")
 }
+*/
+
+// ============================================================
+// OPTION B: Kotlin DSL — build.gradle.kts
+// ============================================================
+/*
+plugins {
+    id("org.openrewrite.rewrite") version "latest.release"
+}
+
+rewrite {
+    // ---- Option B1: Inline recipes (simple) ----
+    activeRecipe("org.openrewrite.java.migrate.UpgradeToJava25")
+    activeRecipe("org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0")
+    activeRecipe("org.openrewrite.java.spring.cloud2025.UpgradeSpringCloud_2025_1")
+    activeRecipe("org.openrewrite.java.jackson.UpgradeJackson_3")
+    activeRecipe("org.openrewrite.java.testing.junit5.JUnit4to5Migration")
+    activeRecipe("org.openrewrite.java.testing.junit6.UpgradeToJUnit6")
+    activeRecipe("org.openrewrite.maven.UpgradePlugins")
+    activeRecipe("org.openrewrite.gradle.UpgradePlugins")
+    
+    // ---- Option B2: Umbrella recipe via rewrite.yml ----
+    // activeRecipe("com.company.FullModernization")
+    
+    setExportDatatables(true)
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    rewrite("org.openrewrite.recipe:rewrite-migrate-java:latest.release")
+    rewrite("org.openrewrite.recipe:rewrite-spring:latest.release")
+    rewrite("org.openrewrite.recipe:rewrite-jackson:latest.release")
+    rewrite("org.openrewrite.recipe:rewrite-testing-frameworks:latest.release")
+}
+*/

@@ -15,7 +15,7 @@ set -e
 PROJECT_DIR="${1:-.}"
 
 echo "=========================================="
-echo "Spring Boot 4.0 + Java 21 Migration"
+echo "Spring Boot 4.0 + Java 25 Migration"
 echo "DRY-RUN MODE (No changes will be made)"
 echo "=========================================="
 echo ""

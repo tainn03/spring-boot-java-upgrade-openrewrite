@@ -4,7 +4,7 @@
 
 **Scope:**
 - Upgrades Spring Boot 3.5.x → 4.0.x
-- Upgrades Java 17 → 21
+- Upgrades Java 17 → 25
 - Supports both Maven and Gradle projects
 - Handles single-module and multi-module projects
 
@@ -47,7 +47,7 @@ See [references/pom-template.xml](references/pom-template.xml) for Maven pattern
 See [references/build-gradle-template.gradle](references/build-gradle-template.gradle) for Gradle pattern.
 
 Key recipes (always use both together):
-- `org.openrewrite.java.migrate.UpgradeToJava21` - Java version migration
+- `org.openrewrite.java.migrate.UpgradeToJava25` - Java version migration
 - `org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0` - Spring Boot version migration
 
 ### 2. Running Safe Migrations
@@ -66,7 +66,7 @@ Common changes OpenRewrite handles automatically:
 
 **Manual follow-up:**
 - Review uses of Java language features (records, sealed classes, pattern matching)
-- Update IDE project SDK to JDK 21
+- Update IDE project SDK to JDK 25
 - Fix third-party library incompatibilities (not handled by OpenRewrite)
 
 ## Critical Rules
@@ -75,11 +75,11 @@ Common changes OpenRewrite handles automatically:
 - Always commit clean git state before migrations
 - Run dryRun before actual migration
 - Test the full suite after migration
-- Use separate branch for upgrades: `git checkout -b upgrade-spring-boot-4-java-21`
-- Verify Java 21 is installed: `java -version`
+- Use separate branch for upgrades: `git checkout -b upgrade-spring-boot-4-java-25`
+- Verify Java 25 is installed: `java -version`
 
 ### ❌ DON'T:
-- Run Spring Boot recipe before upgrading to Java 21 (wrong order)
+- Run Spring Boot recipe before upgrading to Java 25 (wrong order)
 - Forget `activeRecipe()` in Gradle (singular, not `activeRecipes()`)
 - Skip dry-run step
 - Leave OpenRewrite plugin in build file permanently
@@ -91,7 +91,7 @@ Common changes OpenRewrite handles automatically:
 | Plugin version too old | Missing recipes or outdated transformations | Use `latest.release` or pin recent version |
 | Wrong property syntax | Gradle build fails | Use `activeRecipe()` singular, not `activeRecipes()` |
 | Missing dependencies | Plugin can't find recipes | Add `rewrite-migrate-java` and `rewrite-spring` dependencies |
-| Running recipes in wrong order | Java 21 features incompatible with Spring Boot 3.5.x | Always run Java upgrade recipe first |
+| Running recipes in wrong order | Java 25 features incompatible with Spring Boot 3.5.x | Always run Java upgrade recipe first |
 | Third-party incompatibility | Build fails after migration | Manual fix needed; check library compatibility with Spring Boot 4.0 |
 
 ## Repository Structure
@@ -100,7 +100,7 @@ Common changes OpenRewrite handles automatically:
 .
 ├── SKILL.md                              # Detailed workflow guide
 ├── references/
-│   ├── BREAKING_CHANGES.md              # What changes in Spring Boot 4.0 & Java 21
+│   ├── BREAKING_CHANGES.md              # What changes in Spring Boot 4.0 & Java 25
 │   ├── pom-template.xml                 # Maven OpenRewrite plugin template
 │   └── build-gradle-template.gradle     # Gradle OpenRewrite plugin template
 └── scripts/
@@ -115,7 +115,7 @@ When users ask to upgrade their Spring Boot or Java project:
 1. **First:** Verify prerequisites
    - Project is stable at Spring Boot 3.5.x + Java 17
    - Git state is clean
-   - Java 21 is installed
+   - Java 25 is installed
 
 2. **Second:** Use [SKILL.md](SKILL.md) workflow
    - Follow step-by-step order (Step 1-4)

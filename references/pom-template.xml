@@ -1,7 +1,11 @@
 <!-- 
   Template: Maven pom.xml with OpenRewrite plugin configured
-  Use this as reference when adding OpenRewrite to your project
-  Copy the <plugin> block into your <build><plugins> section
+  Use this as reference when adding OpenRewrite to your project.
+  
+  Copy the <plugin> block into your <build><plugins> section.
+  
+  For a multi-module project: add to the root pom.xml only.
+  The plugin processes all child modules automatically.
 -->
 <plugin>
     <groupId>org.openrewrite.maven</groupId>
@@ -10,33 +14,80 @@
     <!-- Optional: pin specific version instead of latest.release
          Example: <version>6.7.0</version>
     -->
+
     <configuration>
-        <!-- IMPORTANT: Order matters - Java first, then Spring Boot -->
+        <!-- 
+          Option A: Inline recipes (simple approach)
+          Order matters: Java first, then framework recipes
+        -->
         <activeRecipes>
-            <recipe>org.openrewrite.java.migrate.UpgradeToJava21</recipe>
+            <!-- Java platform -->
+            <recipe>org.openrewrite.java.migrate.UpgradeToJava25</recipe>
+
+            <!-- Spring ecosystem -->
             <recipe>org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0</recipe>
+            <recipe>org.openrewrite.java.spring.cloud2025.UpgradeSpringCloud_2025_1</recipe>
+
+            <!-- Serialization -->
+            <recipe>org.openrewrite.java.jackson.UpgradeJackson_3</recipe>
+
+            <!-- Testing -->
+            <recipe>org.openrewrite.java.testing.junit5.JUnit4to5Migration</recipe>
+            <recipe>org.openrewrite.java.testing.junit6.UpgradeToJUnit6</recipe>
+
+            <!-- Build modernization -->
+            <recipe>org.openrewrite.maven.UpgradePlugins</recipe>
         </activeRecipes>
-        
+
+        <!-- 
+          Option B: Use a rewrite.yml umbrella recipe (recommended for complex migrations).
+          Comment out activeRecipes above and uncomment below:
+          <configLocation>rewrite.yml</configLocation>
+          <activeRecipes>
+              <recipe>com.company.FullModernization</recipe>
+          </activeRecipes>
+        -->
+
         <!-- Generate detailed reports in rewrite-datatables/ -->
         <exportDatatables>true</exportDatatables>
-        
+
         <!-- Optional: Set logging level for debugging
         <logLevel>DEBUG</logLevel>
         -->
+
+        <!-- Optional: Exclude specific files/patterns
+        <exclusions>
+            <exclusion>**/generated/**</exclusion>
+        </exclusions>
+        -->
     </configuration>
-    
+
     <dependencies>
-        <!-- Java migration recipes -->
+        <!-- Java migration recipes (UpgradeToJava25, etc.) -->
         <dependency>
             <groupId>org.openrewrite.recipe</groupId>
             <artifactId>rewrite-migrate-java</artifactId>
             <version>latest.release</version>
         </dependency>
-        
+
         <!-- Spring Boot 4.0 migration recipes -->
         <dependency>
             <groupId>org.openrewrite.recipe</groupId>
             <artifactId>rewrite-spring</artifactId>
+            <version>latest.release</version>
+        </dependency>
+
+        <!-- Jackson 3 migration recipes -->
+        <dependency>
+            <groupId>org.openrewrite.recipe</groupId>
+            <artifactId>rewrite-jackson</artifactId>
+            <version>latest.release</version>
+        </dependency>
+
+        <!-- JUnit 6 migration recipes -->
+        <dependency>
+            <groupId>org.openrewrite.recipe</groupId>
+            <artifactId>rewrite-testing-frameworks</artifactId>
             <version>latest.release</version>
         </dependency>
     </dependencies>
